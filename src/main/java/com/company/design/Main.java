@@ -15,35 +15,34 @@ import com.company.design.proxy.IBrowser;
 import com.company.design.singleton.AClazz;
 import com.company.design.singleton.BClazz;
 import com.company.design.singleton.SocketClient;
+import com.company.design.strategy.*;
 
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class Main {
     public static void main(String[] args) {
-        Ftp ftpClient = new Ftp("www.naver.com", 22, "/home/etc");
-        ftpClient.connect();
-        ftpClient.moveDirectory();
+        Encoder encoder = new Encoder();
 
+        //base64
+        EncordingStrategy base64 = new Base64Strategy();
 
-        Writer writer = new Writer("text.tmp");
-        writer.fileConnect();
-        writer.write();
+        //normal
+        EncordingStrategy normal = new NormalStrategy();
 
-        Reader reader = new Reader("text.tmp");
-        reader.fileConnect();
-        reader.fileRead();
+        String message = "hello java";
 
-        reader.fileDisconnect();
-        writer.fileDisconnect();
-        ftpClient.disConnect();
+        encoder.setEncordingStrategy(base64);
+        String base64Result = encoder.getMessage(message);
+        System.out.println(base64Result);
 
-        SftpClient sftpClient = new SftpClient("www.naver.com", 22, "/home/etc","text.tmp");
-        sftpClient.connect();
-        sftpClient.write();
-        sftpClient.read();
-        sftpClient.disConnect();
+        encoder.setEncordingStrategy(normal);
+        String normalResult = encoder.getMessage(message);
+        System.out.println(normalResult);
 
+        encoder.setEncordingStrategy(new AppendStrategy());
+        String appendResult = encoder.getMessage(message);
+        System.out.println(appendResult);
 
     }
 }
